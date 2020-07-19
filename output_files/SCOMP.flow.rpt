@@ -1,5 +1,5 @@
 Flow report for SCOMP
-Mon Jul 20 00:22:18 2020
+Mon Jul 20 01:34:13 2020
 Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 
 
@@ -41,7 +41,7 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Mon Jul 20 00:22:18 2020       ;
+; Flow Status                        ; Successful - Mon Jul 20 01:34:13 2020       ;
 ; Quartus Prime Version              ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
 ; Revision Name                      ; SCOMP                                       ;
 ; Top-level Entity Name              ; SCOMP_System                                ;
@@ -146,7 +146,9 @@ https://fpgasoftware.intel.com/eula.
 ; Assembler            ; 00:00:04     ; 1.0                     ; 4710 MB             ; 00:00:04                           ;
 ; Timing Analyzer      ; 00:00:05     ; 1.6                     ; 4867 MB             ; 00:00:07                           ;
 ; EDA Netlist Writer   ; 00:00:04     ; 1.0                     ; 4680 MB             ; 00:00:03                           ;
-; Total                ; 00:00:56     ; --                      ; --                  ; 00:01:22                           ;
+; MIF/HEX Update       ; 00:00:01     ; 1.0                     ; 4740 MB             ; 00:00:01                           ;
+; Assembler            ; 00:00:04     ; 1.0                     ; 4711 MB             ; 00:00:04                           ;
+; Total                ; 00:01:01     ; --                      ; --                  ; 00:01:27                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -160,6 +162,8 @@ https://fpgasoftware.intel.com/eula.
 ; Assembler            ; DESKTOP-HS79IJ7  ; Windows 10 ; 10.0       ; x86_64         ;
 ; Timing Analyzer      ; DESKTOP-HS79IJ7  ; Windows 10 ; 10.0       ; x86_64         ;
 ; EDA Netlist Writer   ; DESKTOP-HS79IJ7  ; Windows 10 ; 10.0       ; x86_64         ;
+; MIF/HEX Update       ; DESKTOP-HS79IJ7  ; Windows 10 ; 10.0       ; x86_64         ;
+; Assembler            ; DESKTOP-HS79IJ7  ; Windows 10 ; 10.0       ; x86_64         ;
 +----------------------+------------------+------------+------------+----------------+
 
 
@@ -171,6 +175,8 @@ quartus_fit --read_settings_files=off --write_settings_files=off SCOMP -c SCOMP
 quartus_asm --read_settings_files=off --write_settings_files=off SCOMP -c SCOMP
 quartus_sta SCOMP -c SCOMP
 quartus_eda --read_settings_files=off --write_settings_files=off SCOMP -c SCOMP
+quartus_cdb SCOMP -c SCOMP --update_mif
+quartus_asm --read_settings_files=on --write_settings_files=off SCOMP -c SCOMP
 
 
 

@@ -25,6 +25,7 @@ ORG 0
 
 BeforeZero:
 	LOAD Opponent
+	OUT Hex0
 	STORE Pattern
 	
 ZerothHex:
@@ -74,7 +75,7 @@ Escape:
 	OUT Hex1
 	JUMP BeforeZero	
 Three: DW &H03
-Twice: DW &H11
+Twice: DW &H12
 Negative:
 	LOAD TemporaryAccData
 	SUB CheckUp
