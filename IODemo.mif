@@ -1,0 +1,198 @@
+-- Altera Memory Initialization File (MIF)
+
+DEPTH = 2048;
+WIDTH = 16;
+
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+
+CONTENT
+  BEGIN
+    [000..7FF] : 0000;  -- Default to NOP
+
+           000 : 8065;  -- 	CALL   SetupI2C    ; Configure ADXL345
+           001 : 08A8;  -- 	Load Pattern
+           002 : 48AB;  -- 	AND Zero
+           003 : 5041;  -- 	OR    Opponent 
+           004 : 9804;  -- 	OUT Hex0
+           005 : 10A8;  -- 	STORE  Pattern
+           006 : 0842;  -- 	LOAD Player
+           007 : 48AB;  -- 	AND Zero
+           008 : 5044;  -- 	OR	Down
+           009 : 1042;  -- 	STORE Player
+           00A : 9805;  -- 	OUT Hex1
+           00B : 0849;  -- 	LOAD Score
+           00C : 48AB;  -- 	AND Zero
+           00D : 50AD;  -- 	OR Bit0
+           00E : 1049;  -- 	STORE Score
+           00F : 0841;  -- 	LOAD Opponent
+           010 : 10A8;  -- 	STORE Pattern
+           011 : 8055;  -- 	CALL   Delay
+           012 : 08A8;  -- 	LOAD   Pattern        ; bit mask
+           013 : 6004;  -- 	SHIFT 4
+           014 : 10A8;  -- 	STORE Pattern
+           015 : 401B;  -- 	JZERO BeforeFirst
+           016 : 9804;  -- 	OUT    Hex0
+           017 : 807B;  -- 	CALL   ReadX
+           018 : 3030;  -- 	JNEG	Negative
+           019 : 3834;  -- 	JPOS	Positive
+           01A : 2811;  -- 	JUMP   ZerothHex
+           01B : 0843;  -- 	LOAD Up
+           01C : 10A8;  -- 	STORE Pattern
+           01D : 8055;  -- 	CALL Delay
+           01E : 08A8;  -- 	LOAD  Pattern
+           01F : 2042;  -- 	SUB Player
+           020 : 404C;  -- 	JZERO CollisonDetected
+           021 : 2822;  -- 	JUMP Escape
+           022 : 0849;  -- 	LOAD Score
+           023 : 9801;  -- 	OUT LEDs
+           024 : 6001;  -- 	SHIFT 1
+           025 : 1049;  -- 	STORE SCORE
+           026 : 082E;  -- 	LOAD Three
+           027 : 9805;  -- 	OUT Hex1
+           028 : 08AB;  -- 	LOAD Zero
+           029 : 9804;  -- 	OUT Hex0
+           02A : 8055;  -- 	CALL Delay
+           02B : 082F;  -- 	LOAD Twice
+           02C : 9805;  -- 	OUT Hex1
+           02D : 280F;  -- 	JUMP BeforeZero	
+           02E : 0003;  -- Three: DW &H03
+           02F : 0011;  -- Twice: DW &H11
+           030 : 0848;  -- 	LOAD TemporaryAccData
+           031 : 2045;  -- 	SUB CheckUp
+           032 : 3839;  -- 	JPOS PlayerUp
+           033 : 2811;  -- 	JUMP ZerothHex
+           034 : 0848;  -- 	LOAD TemporaryAccData
+           035 : 0844;  -- 	LOAD Down
+           036 : 1042;  -- 	STORE Player
+           037 : 9805;  -- 	OUT Hex1
+           038 : 2811;  -- 	JUMP ZerothHex
+           039 : 0843;  -- 	LOAD Up
+           03A : 1042;  -- 	STORE Player
+           03B : 9805;  -- 	OUT Hex1
+           03C : 2811;  -- 	JUMP ZerothHex
+           03D : 0844;  -- 	LOAD Down
+           03E : 1042;  -- 	STORE Player
+           03F : 9805;  -- 	OUT Hex1
+           040 : 2811;  -- 	JUMP ZerothHex
+           041 : 0001;  -- Opponent:  DW &H0001
+           042 : 0002;  -- Player:	   DW &H02
+           043 : 0001;  -- Up:		   DW &H01
+           044 : 0002;  -- Down:	   DW &H02
+           045 : FFB0;  -- CheckUp:   DW &HFFB0
+           046 : F000;  -- CheckNeg:  DW &HF000
+           047 : 0050;  -- CheckDown: DW &H0050
+           048 : 0000;  -- TemporaryAccData: DW 0
+           049 : 0001;  -- Score:	DW &B0000000001
+           04A : 0010;  -- CheckLeftUp: DW &H10
+           04B : 0001;  -- CheckLeftDown: DW &H01
+           04C : 284C;  -- 	JUMP CollisonDetected
+           04D : 8055;  -- 	CALL   Delay
+           04E : 08A8;  -- 	LOAD   Pattern
+           04F : 48AD;  -- 	AND    Bit0         ; bit mask
+           050 : 08A8;  -- 	LOAD   Pattern
+           051 : 6011;  -- 	SHIFT  -1
+           052 : 10A8;  -- 	STORE  Pattern
+           053 : 9801;  -- 	OUT    LEDs
+           054 : 284D;  -- 	JUMP   Right
+           055 : 9802;  -- 	OUT    Timer
+           056 : 9002;  -- 	IN     Timer
+           057 : 6FFB;  -- 	ADDI   -5
+           058 : 3056;  -- 	JNEG   WaitingLoop
+           059 : 8800;  -- 	RETURN
+           05A : 808F;  -- 	CALL   BlockI2C    ; wait for idle
+           05B : 089D;  -- 	LOAD   I2CR1Cmd    ; load command
+           05C : 9890;  -- 	OUT    I2C_CMD     ; to I2C_CMD register
+           05D : 08A1;  -- 	LOAD   SRCAddr    ; 
+           05E : 9891;  -- 	OUT    I2C_DATA    ; to I2C_DATA register
+           05F : 9892;  -- 	OUT    I2C_RDY     ; start the communication
+           060 : 808F;  -- 	CALL   BlockI2C    ; wait for it to finish
+           061 : 9091;  -- 	IN     I2C_data    ; put the data in AC
+           062 : 6017;  -- 	SHIFT -7
+           063 : 405A;  -- 	JZERO   WaitForData   ; bytes returned in wrong order; swap them
+           064 : 8800;  -- 	RETURN
+           065 : 08A2;  -- 	LOAD   AccCfg      ; load the number of commands
+           066 : 107A;  -- 	STORE  CmdCnt
+           067 : B8A2;  -- 	LOADI  AccCfg      ; Load list ADDRESS
+           068 : 6801;  -- 	ADDI   1           ; Increment to first command
+           069 : 1079;  -- 	STORE  CmdPtr
+           06A : 808F;  -- 	CALL   BlockI2C    ; wait for idle
+           06B : 089C;  -- 	LOAD   I2CWCmd     ; load write command
+           06C : 9890;  -- 	OUT    I2C_CMD     ; to I2C_CMD register
+           06D : 7079;  -- 	ILOAD  CmdPtr      ; load current command
+           06E : 9891;  -- 	OUT    I2C_DATA    ; to I2C_DATA register
+           06F : 9892;  -- 	OUT    I2C_RDY     ; start the communication
+           070 : 808F;  -- 	CALL   BlockI2C    ; wait for it to finish
+           071 : 0879;  -- 	LOAD   CmdPtr
+           072 : 6801;  -- 	ADDI   1           ; Increment to next command
+           073 : 1079;  -- 	STORE  CmdPtr
+           074 : 087A;  -- 	LOAD   CmdCnt
+           075 : 6FFF;  -- 	ADDI   -1
+           076 : 107A;  -- 	STORE  CmdCnt
+           077 : 386A;  -- 	JPOS   I2CCmdLoop
+           078 : 8800;  -- 	RETURN
+           079 : 0000;  -- CmdPtr: DW 0
+           07A : 0000;  -- CmdCnt: DW 0
+           07B : 808F;  -- 	CALL   BlockI2C    ; wait for idle
+           07C : 089E;  -- 	LOAD   I2CR2Cmd    ; load command
+           07D : 9890;  -- 	OUT    I2C_CMD     ; to I2C_CMD register
+           07E : 08A0;  -- 	LOAD   AccXAddr    ; 
+           07F : 9891;  -- 	OUT    I2C_DATA    ; to I2C_DATA register
+           080 : 9892;  -- 	OUT    I2C_RDY     ; start the communication
+           081 : 808F;  -- 	CALL   BlockI2C    ; wait for it to finish
+           082 : 9091;  -- 	IN     I2C_data    ; put the data in AC
+           083 : 8085;  -- 	CALL   SwapBytes   ; bytes returned in wrong order; swap them
+           084 : 8800;  -- 	RETURN
+           085 : 108D;  -- 	STORE  SBT1
+           086 : 6008;  -- 	SHIFT  8
+           087 : 108E;  -- 	STORE  SBT2
+           088 : 088D;  -- 	LOAD   SBT1
+           089 : 6018;  -- 	SHIFT  -8
+           08A : 48B7;  -- 	AND    LoByte
+           08B : 508E;  -- 	OR     SBT2
+           08C : 8800;  -- 	RETURN
+           08D : 0000;  -- SBT1: DW 0
+           08E : 0000;  -- SBT2: DW 0
+           08F : 08AB;  -- 	LOAD   Zero
+           090 : 10A9;  -- 	STORE  Temp        ; Used to check for timeout
+           091 : 08A9;  -- 	LOAD   Temp
+           092 : 6801;  -- 	ADDI   1           ; this will result in ~0.1s timeout
+           093 : 10A9;  -- 	STORE  Temp
+           094 : 4098;  -- 	JZERO  I2CError    ; Timeout occurred; error
+           095 : 9092;  -- 	IN     I2C_RDY     ; Read busy signal
+           096 : 3891;  -- 	JPOS   BI2CL       ; If not 0, try again
+           097 : 8800;  -- 	RETURN             ; Else return
+           098 : 08AB;  -- 	LOAD   Zero
+           099 : 692C;  -- 	ADDI   &H12C       ; "I2C"
+           09A : 9804;  -- 	OUT    Hex0        ; display error message
+           09B : 2898;  -- 	JUMP   I2CError
+           09C : 203A;  -- I2CWCmd:  DW &H203A    ; write two i2c bytes, addr 0x3A
+           09D : 113A;  -- I2CR1Cmd: DW &H113A    ; write one byte, read one byte, addr 0x3A
+           09E : 123A;  -- I2CR2Cmd: DW &H123A    ; write one byte, read two bytes, addr 0x3A
+           09F : 1130;  -- I2CR3Cmd: DW &H1130
+           0A0 : 0034;  -- AccXAddr: DW &H34      ; X acceleration register address.
+           0A1 : 0030;  -- SRCAddr:  DW &H30
+           0A2 : 0005;  -- 	DW 5           ; Number of commands to send
+           0A3 : 0000;  -- 	DW &H0000      ; Meaningless write to sync communication
+           0A4 : 3103;  -- 	DW &H3103      ; Right-justified 10-bit data, +/-2 G
+           0A5 : 3800;  -- 	DW &H3800      ; No FIFO
+           0A6 : 2C0A;  -- 	DW &H2C0A      ; 6.25 samples per second
+           0A7 : 2D08;  -- 	DW &H2D08      ; No sleep
+           0A8 : 0000;  -- Pattern:   DW 0
+           0A9 : 0000;  -- Temp:      DW 0
+           0AA : 0000;  -- ReadCount: DW 0
+           0AB : 0000;  -- Zero:      DW 0
+           0AC : FFFF;  -- NegOne:    DW -1
+           0AD : 0001;  -- Bit0:      DW &B0000000001
+           0AE : 0002;  -- Bit1:      DW &B0000000010
+           0AF : 0004;  -- Bit2:      DW &B0000000100
+           0B0 : 0008;  -- Bit3:      DW &B0000001000
+           0B1 : 0010;  -- Bit4:      DW &B0000010000
+           0B2 : 0020;  -- Bit5:      DW &B0000100000
+           0B3 : 0040;  -- Bit6:      DW &B0001000000
+           0B4 : 0080;  -- Bit7:      DW &B0010000000
+           0B5 : 0100;  -- Bit8:      DW &B0100000000
+           0B6 : 0200;  -- Bit9:      DW &B1000000000
+           0B7 : 00FF;  -- LoByte:    DW &H00FF
+           0B8 : FF00;  -- HiByte:    DW &HFF00
+  END;
